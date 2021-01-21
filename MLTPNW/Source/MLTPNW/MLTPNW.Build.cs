@@ -38,6 +38,7 @@ public class MLTPNW : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"PhysXVehicles",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

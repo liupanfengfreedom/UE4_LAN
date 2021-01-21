@@ -17,11 +17,18 @@ UPropertySyncNetComponent::UPropertySyncNetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	// ...
 	SetIsReplicatedByDefault(true);
-
 }
 
 
 // Called when the game starts
+void UPropertySyncNetComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (b_HumanControlledOnListenserver)
+	{
+		b_HumanControlledOnListenserver_ = false;
+		b_HumanControlledOnListenserver = false;
+	}
+}
 void UPropertySyncNetComponent::BeginPlay()
 {
 	if (UKismetSystemLibrary::IsServer(this)&& !b_HumanControlledOnListenserver_)
@@ -60,11 +67,12 @@ void UPropertySyncNetComponent::SERVER_Setsyncproperty_Implementation(const FStr
 void UPropertySyncNetComponent::OnRep_syncproperty()
 {
 	Async(EAsyncExecution::ThreadPool, [=]() {
-		FPlatformProcess::Sleep(0.2);
+		FPlatformProcess::Sleep(0.5f);
 		AsyncTask(ENamedThreads::GameThread,
 			[=]()
 			{
 				onpropertychangeevent.Broadcast(syncproperty);
+				onpropertychangeeventv1.ExecuteIfBound(syncproperty);
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, syncproperty);
 			}
 		);
