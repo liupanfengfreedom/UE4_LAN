@@ -13,6 +13,7 @@ ALANCharacter::ALANCharacter()
 	PropertySyncNetCom = CreateDefaultSubobject<UPropertySyncNetComponent>(TEXT("PropertySyncNetCom"));
 	PropertySyncNetCom->SetupAttachment(GetRootComponent());
 	PropertySyncNetCom->SetRelativeLocation(FVector(0, 0, 0)); // Position the camera
+	PropertySyncNetCom->SetIsReplicated(true);
 }
 
 // Called when the game starts or when spawned
@@ -25,7 +26,7 @@ void ALANCharacter::BeginPlay()
 	if (PropertySyncNetCom->ishumancontrolled())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PropertySyncNetCom->ishumancontrolled()"));
-		PropertySyncNetCom->setproperty(FString::FromInt(FMath::Rand()));
+		//PropertySyncNetCom->setproperty(FString::FromInt(FMath::Rand()));
 		UGameplayStatics::GetPlayerController(this, 0)->UnPossess();
 		UGameplayStatics::GetPlayerController(this, 0)->Possess(this);
 	}

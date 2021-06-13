@@ -4,7 +4,7 @@
 #include "LANWheeledVehicle.h"
 #include "PropertySyncNetComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Kismet/KismetSystemLibrary.h"
 ALANWheeledVehicle::ALANWheeledVehicle()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -18,19 +18,17 @@ ALANWheeledVehicle::ALANWheeledVehicle()
 void ALANWheeledVehicle::BeginPlay()
 {
 	Super::BeginPlay();
-	PropertySyncNetCom->onpropertychangeeventv1.BindLambda([=](const FString& str) {
+	
+	//PropertySyncNetCom->onpropertychangeeventv1.BindLambda([=](const FString& str) {
 
-		});
+	//});
 	if (PropertySyncNetCom->ishumancontrolled())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PropertySyncNetCom->ishumancontrolled()"));
-
-		PropertySyncNetCom->setproperty(FString::FromInt(FMath::Rand()));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PropertySyncNetCom->ishumancontrolled()"));
+		//PropertySyncNetCom->setproperty(FString::FromInt(FMath::Rand()));
 		UGameplayStatics::GetPlayerController(this, 0)->UnPossess();
 		UGameplayStatics::GetPlayerController(this, 0)->Possess(this);
 	}
-
-
 }
 
 // Called every frame

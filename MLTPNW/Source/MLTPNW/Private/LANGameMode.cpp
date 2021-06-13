@@ -7,6 +7,7 @@
 
 void ALANGameMode::BeginPlay()
 {
+	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ALANGameMode::BeginPlay()"));
 	UGameplayStatics::GetAllActorsOfClass(this,APlayerStart::StaticClass(),playerstarts);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::FromInt(playerstarts.Num()));

@@ -10,6 +10,19 @@
 bool ALANPlayerController::b_HumanControlledOnListenserver_ = false;
 FString ALANPlayerController::spawnpawnpath = "";
 int ALANPlayerController::teamnumber = 0;
+void ALANPlayerController::setspawninfor(const FString& mspawnpawnpath, int mteamnumber)
+{
+	spawnpawnpath = mspawnpawnpath;
+	teamnumber = mteamnumber;
+}
+void ALANPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (b_HumanControlledOnListenserver)
+	{
+		b_HumanControlledOnListenserver_ = false;
+		b_HumanControlledOnListenserver = false;
+	}
+}
 void ALANPlayerController::BeginPlay()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ALANPlayerController::BeginPlay()"));
@@ -22,7 +35,7 @@ void ALANPlayerController::BeginPlay()
 	if (ishumancontrolled() && UKismetSystemLibrary::IsServer(this))
 	{
 		Async(EAsyncExecution::ThreadPool, [=]() {
-			FPlatformProcess::Sleep(0.2);
+			FPlatformProcess::Sleep(0.2);//wait for client????
 			AsyncTask(ENamedThreads::GameThread,
 				[=]()
 				{
@@ -56,6 +69,7 @@ void ALANPlayerController::SERVER_spawnplayer_Implementation(const FString& str,
 	else
 	{
 		transformplane = ps->GetActorTransform();
+		transformplane.SetScale3D(FVector(1));
 	}
 	APawn* pawn = GetWorld()->SpawnActorDeferred<APawn>(uclass, transformplane);
 	if (pawn)
@@ -64,4 +78,31 @@ void ALANPlayerController::SERVER_spawnplayer_Implementation(const FString& str,
 		UnPossess();
 		Possess(pawn);
 	}
+}
+void ALANPlayerController::SERVER_checkconnection_Implementation()
+{
+	Client_checkconnection();
+}
+void ALANPlayerController::Client_checkconnection_Implementation()
+{
+	bisconnected = true;
+	if (TFOnCheckConnectedResult)
+	{
+		TFOnCheckConnectedResult(1);
+	}
+}
+void ALANPlayerController::checkconnection()
+{
+	SERVER_checkconnection();
+	Async(EAsyncExecution::ThreadPool, [=]() {
+		bisconnected = false;
+		FPlatformProcess::Sleep(1);
+		if (bisconnected)
+		{
+		}
+		else
+		{
+			TFOnCheckConnectedResult(0);
+		}
+		}, nullptr);
 }
