@@ -10,6 +10,8 @@
 bool ALANPlayerController::b_HumanControlledOnListenserver_ = false;
 FString ALANPlayerController::spawnpawnpath = "";
 int ALANPlayerController::teamnumber = 0;
+int ALANPlayerController::id = 0;
+
 void ALANPlayerController::setspawninfor(const FString& mspawnpawnpath, int mteamnumber)
 {
 	spawnpawnpath = mspawnpawnpath;
@@ -71,12 +73,17 @@ void ALANPlayerController::SERVER_spawnplayer_Implementation(const FString& str,
 		transformplane = ps->GetActorTransform();
 		transformplane.SetScale3D(FVector(1));
 	}
+	if (!restoretrans.Equals(FTransform()))
+	{
+		transformplane = restoretrans;
+	}
 	APawn* pawn = GetWorld()->SpawnActorDeferred<APawn>(uclass, transformplane);
 	if (pawn)
 	{
 		UGameplayStatics::FinishSpawningActor(pawn, transformplane);
 		UnPossess();
 		Possess(pawn);
+		mpawn = pawn;
 	}
 }
 void ALANPlayerController::SERVER_checkconnection_Implementation()
@@ -105,4 +112,9 @@ void ALANPlayerController::checkconnection()
 			TFOnCheckConnectedResult(0);
 		}
 		}, nullptr);
+}
+void ALANPlayerController::Client_serverallotid_Implementation(int idp)
+{
+	ALANPlayerController::id = idp;
+
 }
