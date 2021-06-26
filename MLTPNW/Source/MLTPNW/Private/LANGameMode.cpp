@@ -22,7 +22,7 @@ void ALANGameMode::BeginPlay()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ALANGameMode::BeginPlay()"));
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), playerstarts);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::FromInt(playerstarts.Num()));
-
+	UE_LOG(LogTemp, Warning, TEXT("ALANGameMode::BeginPlay() -------------------++++++++++++++++"));
 }
 AActor* ALANGameMode::getaplayerstart()
 {
@@ -106,4 +106,18 @@ FString ALANGameMode::InitNewPlayer(APlayerController* NewPlayerController, cons
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, *strarray[0]);
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, *strarray[1]);
 	return restr;
+}
+void ALANGameMode::RepossessPawn()
+{
+	for (auto& Elem : playerinformap)
+	{
+		ALANPlayerController* lpc = Cast<ALANPlayerController>(Elem.Value.pcontroller);
+		if (lpc&&lpc->GetPawn())
+		{}
+		else
+		{		
+			lpc->SERVER_Repossesspawn();
+			UE_LOG(LogTemp, Warning, TEXT("pc->SERVER_Repossesspawn()========================+++++++++++"));
+		}
+	}
 }

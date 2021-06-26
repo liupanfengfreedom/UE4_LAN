@@ -37,4 +37,5 @@ public:
 	virtual void BeginPlay() override;
 	TArray<AActor*> getplayerstarts() { return playerstarts; }
 	AActor* getaplayerstart();
+	void RepossessPawn();
 };

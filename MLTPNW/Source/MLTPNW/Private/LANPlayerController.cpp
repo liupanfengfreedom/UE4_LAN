@@ -6,7 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "LANGameMode.h"
-
+#define IS_DS
 bool ALANPlayerController::b_HumanControlledOnListenserver_ = false;
 FString ALANPlayerController::spawnpawnpath = "";
 int ALANPlayerController::teamnumber = 0;
@@ -29,6 +29,12 @@ void ALANPlayerController::BeginPlay()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ALANPlayerController::BeginPlay()"));
 	langamemode = Cast<ALANGameMode>(GetWorld()->GetAuthGameMode());
+#ifdef IS_DS
+	if (!UKismetSystemLibrary::IsDedicatedServer(this))
+	{
+		SERVER_spawnplayer(spawnpawnpath, teamnumber);
+	}
+#else
 	if (UKismetSystemLibrary::IsServer(this) && !b_HumanControlledOnListenserver_)
 	{
 		b_HumanControlledOnListenserver_ = true;
@@ -36,8 +42,9 @@ void ALANPlayerController::BeginPlay()
 	}
 	if (ishumancontrolled() && UKismetSystemLibrary::IsServer(this))
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("UKismetSystemLibrary::IsServer(this) true"));
 		Async(EAsyncExecution::ThreadPool, [=]() {
-			FPlatformProcess::Sleep(0.2);//wait for client????
+			FPlatformProcess::Sleep(0.5);//wait for client????
 			AsyncTask(ENamedThreads::GameThread,
 				[=]()
 				{
@@ -50,6 +57,9 @@ void ALANPlayerController::BeginPlay()
 	{
 		SERVER_spawnplayer(spawnpawnpath, teamnumber);
 	}
+#endif
+
+
 	Super::BeginPlay();
 }
 bool ALANPlayerController::ishumancontrolled()
@@ -84,7 +94,13 @@ void ALANPlayerController::SERVER_spawnplayer_Implementation(const FString& str,
 		UnPossess();
 		Possess(pawn);
 		mpawn = pawn;
+		langamemode->RepossessPawn();
 	}
+}
+void ALANPlayerController::SERVER_Repossesspawn()
+{
+	UnPossess();
+	Possess(mpawn);
 }
 void ALANPlayerController::SERVER_checkconnection_Implementation()
 {

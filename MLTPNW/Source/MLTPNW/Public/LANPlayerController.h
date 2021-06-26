@@ -35,6 +35,7 @@ public:
 	static void setspawninfor(const FString & mspawnpawnpath, int mteamnumber=0);
 	UFUNCTION(reliable, server, WithValidation)
 	void SERVER_spawnplayer(const FString& str,int tn);
+	void SERVER_Repossesspawn();
 	UFUNCTION(reliable, client)
 		void Client_serverallotid(int idp);
 	UFUNCTION(BlueprintCallable)
